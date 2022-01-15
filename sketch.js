@@ -1,94 +1,90 @@
+let page = 1;
+let img;
+let buttonimg;
 
-
-// CV 관련 코드.
-var classifier;
-var imageModelURL = 'https://teachablemachine.withgoogle.com/models/4O9lMA2qe/';    // 훈련된 모델의 업로드 URL.
-
-// 동영상 관련 코드.
-var video;
-var flippedVideo;
-
-var boxX = 400
-var boxY = 400
-var boxSize = 20
-
-var videoWidth = 160
-var videoHeight = 120
-
-var canvasWidth = 800
-var canvasHeight = 800
-
-
-
-function setup() {
-
-  // 모델 분류 라벨 불러오기
-  classifier = ml5.imageClassifier(imageModelURL + 'model.json');
-
-  createCanvas(800, 800);
-  
-  // 비디오 캡처 설정.
-  video = createCapture(VIDEO);
-  video.size(videoWidth, videoHeight);
-  video.hide();
-  
-  // 비디오 분류 관련 코드.
-  updateModel()
+function preload() {
+  img = loadImage('assets/school.jpg');
+  buttonimg
 }
-
-
+function setup() {
+  createCanvas(400, 600);
+  
+  
+}
 
 function draw() {
-  background(50);
-  noStroke()
+  var centralXpos = width / 2;
+  var centralYpos = height / 2;
+  textSize(30);
+  textAlign(CENTER);
   
-  // 박스 그리기
-  rect(boxX, boxY, boxSize, boxSize);
+  if (page === 1) {
+    
   
-  // 웹캠 비디오 표시.
-  image(flippedVideo, canvasWidth - videoWidth, 0);
-}
-
-
-
-// 카메라를 통해 이미지 받고 모델 prediction 하는 코드
-function updateModel(){
-  flippedVideo = ml5.flipImage(video);
-  classifier.classify(flippedVideo, classiferHandler);
-  flippedVideo.remove();
-}
-
-
-
-// prediction 결과 핸들링 함수
-function classiferHandler(error, results) {
+    background(220);
+    fill(0,180,255,100);
+    noStroke();
   
-  // results에는 각 클래스별 확률(점수)가 나옴
-  // 0부터 가장 높은 순서대로 나옴
-  // 성녕이가 학습한 모델은 Idle, Up, Down, Left, Right 로 구성됨
-  var result = results[0].label;
-
-  if (result == "Up") {
-    moveBox(0,-2)
-  } else if (result == "Down") {
-    moveBox(0,2)
-  } else if (result == "Left") {
-    moveBox(-2,0)
-  } else if (result == "Right") {
-    moveBox(2,0)
+    rect(0,0,width,50);
+    rect(0,height-100,width,100);
+  
+    
+    
+    fill(255);
+    text("추천 여행지",centralXpos,38);
+    text("다른 여행지 찾아보기",centralXpos,height-38)
+  
+    multipleRect3x3(28,70,20,20,100,120);
+    
+  
   }
-  // Idle은 동작 X
-
-  console.log(result)
   
-  // 다음 결과를 받기 위한 prediction
-  updateModel();
+  if (page === 2) {
+    fill(240)
+    rect(0,0,400,800)
+    
+    fill(0,180,255,100);
+    noStroke();
+    rect(0,0,width,50);
+    
+    fill(255);
+    text("여행지 5",centralXpos,38);
+    imageMode(CENTER);
+    image(img,centralXpos,centralYpos-100,width,300);
+
+    textAlign(LEFT);
+
+    fill(0,0,255);
+    text('경사로 있음\n입장료 무료',20,400);
+    
+
+    textSize(20);
+    fill(255,0,0);
+    text('경사 급함\n지체장애인 배려 시설 없음\n시각장애인 배려 시설 없음',20,500);
+
+  }
+  
+  console.log(page);
 }
 
+function multipleRect3x3(startX,startY,intervalX,intervalY,xSize,ySize) {
+  for (i = 0; i < 3; i++) {
+    for (j = 0; j < 3; j++) {
+      var xPos = startX + (xSize+intervalX) * i;
+      var yPos = startY + (ySize+intervalY) * j;
+      fill(255)
+      rect(xPos,yPos,xSize,ySize);
+      textSize(15);
+      fill(0);
+      text("여행지" + (j*3+i+1),xPos+(xSize/2),yPos+100);
+    }
+  }
+}
 
-
-// 상자의 위치를 amount만큼 움직이는 함수
-function moveBox(amountX, amountY) {
-  boxX += amountX;
-  boxY += amountY;
+function mousePressed() {
+  if (page === 1) {
+    page = 2;
+  } else {
+    page = 1;
+  }
 }
